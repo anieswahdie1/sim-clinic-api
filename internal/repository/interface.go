@@ -7,6 +7,9 @@ type UserRepository interface {
 	FindByUsername(username string) (*model.User, error)
 	FindByEmail(email string) (*model.User, error)
 	FindByID(id uint) (*model.User, error)
+	FindAll() ([]model.User, error)
+	FindByRole(roleName string) ([]model.User, error)
+	FindByRoles(roleNames []string) ([]model.User, error)
 }
 
 type RoleRepository interface {

@@ -60,9 +60,10 @@ func main() {
 
 	// Initialize services
 	authService := service.NewAuthService(userRepo, roleRepo, tokenRepo, cfg.JWTSecret, cfg.JWTExpire)
+	userService := service.NewUserService(userRepo)
 
 	// Setup routes
-	handler.SetupRoutes(e, authService)
+	handler.SetupRoutes(e, authService, userService)
 
 	// Start server
 	logrus.Infof("Server starting on port %s", cfg.AppPort)

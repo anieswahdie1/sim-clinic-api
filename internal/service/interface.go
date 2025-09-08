@@ -8,3 +8,8 @@ type AuthService interface {
 	Logout(tokenString string, userID uint) error
 	ValidateToken(tokenString string) (*model.User, error)
 }
+
+type UserService interface {
+	GetAllUsers(currentUserRole string) ([]model.User, error)
+	GetUserByID(id uint, currentUserRole string) (*model.User, error)
+}

@@ -46,10 +46,10 @@ func AuthMiddleware(authService service.AuthService) echo.MiddlewareFunc {
 
 func isPublicRoute(path string) bool {
 	publicRoutes := []string{
-		"/auth/login",
-		"/auth/register",
-		"/health",
+		"/api/auth/login",
+		"/api/auth/register",
 		"/swagger/",
+		//"/health",
 	}
 
 	for _, route := range publicRoutes {

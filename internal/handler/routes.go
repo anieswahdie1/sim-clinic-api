@@ -9,7 +9,7 @@ import (
 	"sim-clinic-api/internal/service"
 )
 
-func SetupRoutes(e *echo.Echo, authService service.AuthService) {
+func SetupRoutes(e *echo.Echo, authService service.AuthService, userService service.UserService) {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -28,14 +28,27 @@ func SetupRoutes(e *echo.Echo, authService service.AuthService) {
 
 	// Initialize handlers
 	authHandler := NewAuthHandler(authService)
+	userHandler := NewUserHandler(userService)
 
-	// Auth routes
-	auth := e.Group("/auth")
+	// API Group dengan prefix api
+	api := e.Group("/api")
 	{
-		auth.POST("/register", authHandler.Register)
-		auth.POST("/login", authHandler.Login)
-		auth.POST("/logout", authHandler.Logout)
+		// Auth routes
+		auth := api.Group("/auth")
+		{
+			auth.POST("/register", authHandler.Register)
+			auth.POST("/login", authHandler.Login)
+			auth.POST("/logout", authHandler.Logout)
+		}
+
+		// Users Routes (protected)
+		users := api.Group("/users")
+		{
+			users.GET("", userHandler.GetAllUsers)
+			users.GET("/:id", userHandler.GetUserByID)
+		}
 	}
+
 }
 
 func LoggingMiddleware() echo.MiddlewareFunc {

@@ -43,3 +43,36 @@ func (r *userRepository) FindByID(id uint) (*model.User, error) {
 	}
 	return &user, nil
 }
+
+func (r *userRepository) FindAll() ([]model.User, error) {
+	var users []model.User
+	err := r.db.Preload("Role").Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+func (r *userRepository) FindByRole(roleName string) ([]model.User, error) {
+	var users []model.User
+	err := r.db.Preload("Role").
+		Joins("JOIN roles ON users.role_id = roles.id").
+		Where("roles.name = ?", roleName).
+		Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+func (r *userRepository) FindByRoles(roleNames []string) ([]model.User, error) {
+	var users []model.User
+	err := r.db.Preload("Role").
+		Joins("JOIN roles ON users.role_id = roles.id").
+		Where("roles.name IN ?", roleNames).
+		Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
