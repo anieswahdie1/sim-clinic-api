@@ -53,3 +53,19 @@ type LoginResponse struct {
 	Username    string `json:"username"`
 	Email       string `json:"email"`
 }
+
+type UpdateUserRequest struct {
+	Username *string `json:"username" valid:"alphanum,length(3|50)"`
+	Email    *string `json:"email" valid:"optional,email"`
+	RoleID   *uint   `json:"role_id" valid:"optional"`
+}
+
+func (r *UpdateUserRequest) Validate() error {
+	// Skip validation jika semua field nil (tidak ada yang diupdate)
+	if r.Username == nil && r.Email == nil && r.RoleID == nil {
+		return nil
+	}
+
+	_, err := govalidator.ValidateStruct(r)
+	return err
+}

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"sim-clinic-api/internal/model"
 	"sim-clinic-api/internal/repository"
@@ -67,6 +68,101 @@ func (s *userService) GetUserByID(id uint, currentUserRole string) (*model.User,
 	return user, nil
 }
 
+func (s *userService) UpdateUser(id uint, request model.UpdateUserRequest, currentUserRole string, currentUserID uint) (*model.User, error) {
+	// Get target user
+	targetUser, err := s.userRepo.FindByID(id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, &ServiceError{Message: "user not found", Code: 404}
+		}
+		return nil, err
+	}
+
+	// Authorization check
+	if !s.canUpdateUser(currentUserRole, currentUserID, targetUser, request.RoleID) {
+		return nil, &ServiceError{
+			Message: "access denied: insufficient permissions",
+			Code:    403,
+		}
+	}
+
+	// Apply updates
+	if request.Username != nil {
+		// Check if new username is available (excluding current user)
+		existingUser, _ := s.userRepo.FindByUsername(*request.Username)
+		if existingUser != nil && existingUser.ID != id {
+			return nil, &ServiceError{Message: "username already exists", Code: 400}
+		}
+		targetUser.Username = *request.Username
+	}
+
+	if request.Email != nil {
+		// Check if new email is available (excluding current user)
+		existingEmail, _ := s.userRepo.FindByEmail(*request.Email)
+		if existingEmail != nil && existingEmail.ID != id {
+			return nil, &ServiceError{Message: "email already exists", Code: 400}
+		}
+		targetUser.Email = *request.Email
+	}
+
+	if request.RoleID != nil {
+		// Validate new role exists
+		_, err := s.userRepo.FindByID(*request.RoleID)
+		if err != nil {
+			if err == gorm.ErrRecordNotFound {
+				return nil, &ServiceError{Message: "role not found", Code: 400}
+			}
+			return nil, err
+		}
+		targetUser.RoleID = *request.RoleID
+	}
+
+	// Save updates
+	if err := s.userRepo.Update(targetUser); err != nil {
+		return nil, err
+	}
+
+	// Reload user with role data
+	updatedUser, err := s.userRepo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	logrus.Infof("User %d updated user %d successfully", currentUserID, id)
+	return updatedUser, nil
+}
+
+func (s *userService) DeleteUser(id uint, currentUserRole string, currentUserID uint) error {
+	// Get target user
+	targetUser, err := s.userRepo.FindByID(id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return &ServiceError{Message: "user not found", Code: 404}
+		}
+		return err
+	}
+
+	// Authorization check
+	if !s.canDeleteUser(currentUserRole, currentUserID, targetUser) {
+		return &ServiceError{
+			Message: "access denied: insufficient permissions",
+			Code:    403,
+		}
+	}
+
+	// Prevent self-deletion
+	if currentUserID == id {
+		return &ServiceError{Message: "cannot delete yourself", Code: 400}
+	}
+
+	if err := s.userRepo.Delete(id); err != nil {
+		return err
+	}
+
+	logrus.Infof("User %d deleted user %d successfully", currentUserID, id)
+	return nil
+}
+
 // hasPermission checks if current user role has permission to access target user role
 func (s *userService) hasPermission(currentRole, targetRole string) bool {
 	roleHierarchy := map[string]int{
@@ -94,4 +190,61 @@ func (s *userService) getRoleLevel(role string) int {
 		"user":        1,
 	}
 	return roleLevels[role]
+}
+
+func (s *userService) canUpdateUser(currentRole string, currentUserID uint, targetUser *model.User, newRoleID *uint) bool {
+	roleHierarchy := map[string]int{
+		"super_admin": 3,
+		"admin":       2,
+		"user":        1,
+	}
+
+	//currentLevel := roleHierarchy[currentRole]
+	targetLevel := roleHierarchy[targetUser.Role.Name]
+
+	// Super admin can update anyone
+	if currentRole == "super_admin" {
+		return true
+	}
+
+	// Admin can update themselves and users
+	if currentRole == "admin" {
+		// Admin can update themselves
+		if currentUserID == targetUser.ID {
+			return true
+		}
+		// Admin can update users (but not other admins or super_admins)
+		return targetLevel <= roleHierarchy["user"]
+	}
+
+	// User can only update themselves
+	if currentRole == "user" {
+		return currentUserID == targetUser.ID
+	}
+
+	return false
+}
+
+func (s *userService) canDeleteUser(currentRole string, currentUserID uint, targetUser *model.User) bool {
+	roleHierarchy := map[string]int{
+		"super_admin": 3,
+		"admin":       2,
+		"user":        1,
+	}
+
+	//currentLevel := roleHierarchy[currentRole]
+	targetLevel := roleHierarchy[targetUser.Role.Name]
+
+	// Super admin can delete anyone except themselves
+	if currentRole == "super_admin" {
+		return currentUserID != targetUser.ID
+	}
+
+	// Admin can only delete users
+	if currentRole == "admin" {
+		return targetLevel <= roleHierarchy["user"]
+	}
+
+	// User cannot delete anyone
+	return false
 }

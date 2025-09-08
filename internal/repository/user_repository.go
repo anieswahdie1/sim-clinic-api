@@ -76,3 +76,11 @@ func (r *userRepository) FindByRoles(roleNames []string) ([]model.User, error) {
 	}
 	return users, nil
 }
+
+func (r *userRepository) Update(user *model.User) error {
+	return r.db.Save(user).Error
+}
+
+func (r *userRepository) Delete(id uint) error {
+	return r.db.Delete(&model.User{}, id).Error
+}

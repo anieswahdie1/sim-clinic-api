@@ -46,6 +46,8 @@ func SetupRoutes(e *echo.Echo, authService service.AuthService, userService serv
 		{
 			users.GET("", userHandler.GetAllUsers)
 			users.GET("/:id", userHandler.GetUserByID)
+			users.PUT("/:id", userHandler.UpdateUser) // Tambahkan ini
+			users.DELETE("/:id", userHandler.DeleteUser)
 		}
 	}
 

@@ -10,6 +10,8 @@ type UserRepository interface {
 	FindAll() ([]model.User, error)
 	FindByRole(roleName string) ([]model.User, error)
 	FindByRoles(roleNames []string) ([]model.User, error)
+	Update(user *model.User) error
+	Delete(id uint) error
 }
 
 type RoleRepository interface {

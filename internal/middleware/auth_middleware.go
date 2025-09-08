@@ -49,7 +49,6 @@ func isPublicRoute(path string) bool {
 		"/api/auth/login",
 		"/api/auth/register",
 		"/swagger/",
-		//"/health",
 	}
 
 	for _, route := range publicRoutes {

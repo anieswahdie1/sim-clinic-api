@@ -12,4 +12,6 @@ type AuthService interface {
 type UserService interface {
 	GetAllUsers(currentUserRole string) ([]model.User, error)
 	GetUserByID(id uint, currentUserRole string) (*model.User, error)
+	UpdateUser(id uint, request model.UpdateUserRequest, currentUserRole string, currentUserID uint) (*model.User, error)
+	DeleteUser(id uint, currentUserRole string, currentUserID uint) error
 }
