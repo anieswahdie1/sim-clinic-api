@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
 	echoSwagger "github.com/swaggo/echo-swagger"
+	customMiddleware "sim-clinic-api/internal/middleware"
 	"sim-clinic-api/internal/service"
 )
 
@@ -15,6 +16,7 @@ func SetupRoutes(e *echo.Echo, authService service.AuthService) {
 	e.Use(middleware.CORS())
 	e.Use(middleware.RequestID())
 	e.Use(LoggingMiddleware())
+	e.Use(customMiddleware.AuthMiddleware(authService))
 
 	// Swagger
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
@@ -32,6 +34,7 @@ func SetupRoutes(e *echo.Echo, authService service.AuthService) {
 	{
 		auth.POST("/register", authHandler.Register)
 		auth.POST("/login", authHandler.Login)
+		auth.POST("/logout", authHandler.Logout)
 	}
 }
 

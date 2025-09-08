@@ -58,6 +58,7 @@ func AutoMigrate(db *gorm.DB) error {
 	err := db.AutoMigrate(
 		&model.Role{},
 		&model.User{},
+		&model.BlacklistedToken{},
 	)
 
 	if err != nil {

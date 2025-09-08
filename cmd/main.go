@@ -56,9 +56,10 @@ func main() {
 	// Initialize repositories
 	userRepo := repository.NewUserRepository(db)
 	roleRepo := repository.NewRoleRepository(db)
+	tokenRepo := repository.NewTokenRepository(db)
 
 	// Initialize services
-	authService := service.NewAuthService(userRepo, roleRepo, cfg.JWTSecret, cfg.JWTExpire)
+	authService := service.NewAuthService(userRepo, roleRepo, tokenRepo, cfg.JWTSecret, cfg.JWTExpire)
 
 	// Setup routes
 	handler.SetupRoutes(e, authService)

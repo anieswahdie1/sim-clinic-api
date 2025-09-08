@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"sim-clinic-api/internal/model"
 	"sim-clinic-api/internal/service"
+	"strings"
 )
 
 type AuthHandler struct {
@@ -89,6 +90,50 @@ func (h *AuthHandler) Login(c echo.Context) error {
 
 	logrus.Infof("User logged in: %s", request.Username)
 	return c.JSON(http.StatusOK, successResponse(response))
+}
+
+// Logout godoc
+// @Summary Logout user
+// @Description Logout user and invalidate JWT token
+// @Tags auth
+// @Accept  json
+// @Produce  json
+// @Security BearerAuth
+// @Success 200 {object} map[string]interface{} "Logout successful"
+// @Failure 401 {object} map[string]interface{} "Unauthorized"
+// @Failure 500 {object} map[string]interface{} "Internal server error"
+// @Router /auth/logout [post]
+func (h *AuthHandler) Logout(c echo.Context) error {
+	// Get token from header
+	authHeader := c.Request().Header.Get("Authorization")
+	if authHeader == "" {
+		return c.JSON(http.StatusUnauthorized, errorResponse("Authorization header required"))
+	}
+
+	// Extract token from "Bearer <token>"
+	parts := strings.Split(authHeader, " ")
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		return c.JSON(http.StatusUnauthorized, errorResponse("Invalid authorization format"))
+	}
+
+	tokenString := parts[1]
+
+	// Get user ID from context (set oleh auth middleware)
+	userID, ok := c.Get("userID").(uint)
+	if !ok {
+		return c.JSON(http.StatusUnauthorized, errorResponse("Invalid user context"))
+	}
+
+	// Call logout service
+	err := h.authService.Logout(tokenString, userID)
+	if err != nil {
+		return handleServiceError(c, err)
+	}
+
+	logrus.Infof("User %d logged out successfully", userID)
+	return c.JSON(http.StatusOK, successResponse(map[string]string{
+		"message": "Logout successful",
+	}))
 }
 
 func successResponse(data interface{}) map[string]interface{} {
