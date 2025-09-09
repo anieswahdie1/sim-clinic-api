@@ -59,6 +59,9 @@ func AutoMigrate(db *gorm.DB) error {
 		&model.Role{},
 		&model.User{},
 		&model.BlacklistedToken{},
+		&model.LayananTerapi{},
+		&model.RiwayatPenyakit{},
+		&model.TeknikTerapi{},
 	)
 
 	if err != nil {

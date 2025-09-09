@@ -24,3 +24,29 @@ type TokenRepository interface {
 	CleanExpiredTokens() error
 	GetUserActiveTokens(userID uint) ([]model.BlacklistedToken, error)
 }
+
+type MasterDataRepository interface {
+	// Layanan Terapi
+	CreateLayananTerapi(layanan *model.LayananTerapi) error
+	FindAllLayananTerapi() ([]model.LayananTerapi, error)
+	FindLayananTerapiByID(id uint) (*model.LayananTerapi, error)
+	FindLayananTerapiByCode(code string) ([]model.LayananTerapi, error)
+	UpdateLayananTerapi(layanan *model.LayananTerapi) error
+	DeleteLayananTerapi(id uint) error
+
+	// Riwayat Penyakit
+	CreateRiwayatPenyakit(riwayat *model.RiwayatPenyakit) error
+	FindAllRiwayatPenyakit() ([]model.RiwayatPenyakit, error)
+	FindRiwayatPenyakitByID(id uint) (*model.RiwayatPenyakit, error)
+	FindRiwayatPenyakitByCode(code string) (*model.RiwayatPenyakit, error)
+	UpdateRiwayatPenyakit(riwayat *model.RiwayatPenyakit) error
+	DeleteRiwayatPenyakit(id uint) error
+
+	// Teknik Terapi
+	CreateTeknikTerapi(teknik *model.TeknikTerapi) error
+	FindAllTeknikTerapi() ([]model.TeknikTerapi, error)
+	FindTeknikTerapiByID(id uint) (*model.TeknikTerapi, error)
+	FindTeknikTerapiByCode(code string) (*model.TeknikTerapi, error)
+	UpdateTeknikTerapi(teknik *model.TeknikTerapi) error
+	DeleteTeknikTerapi(id uint) error
+}

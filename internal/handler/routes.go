@@ -9,7 +9,7 @@ import (
 	"sim-clinic-api/internal/service"
 )
 
-func SetupRoutes(e *echo.Echo, authService service.AuthService, userService service.UserService) {
+func SetupRoutes(e *echo.Echo, authService service.AuthService, userService service.UserService, masterService service.MasterDataService) {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -29,6 +29,7 @@ func SetupRoutes(e *echo.Echo, authService service.AuthService, userService serv
 	// Initialize handlers
 	authHandler := NewAuthHandler(authService)
 	userHandler := NewUserHandler(userService)
+	masterHandler := NewMasterDataHandler(masterService)
 
 	// API Group dengan prefix api
 	api := e.Group("/api")
@@ -43,11 +44,46 @@ func SetupRoutes(e *echo.Echo, authService service.AuthService, userService serv
 
 		// Users Routes (protected)
 		users := api.Group("/users")
+		users.Use(customMiddleware.AuthMiddleware(authService))
 		{
 			users.GET("", userHandler.GetAllUsers)
 			users.GET("/:id", userHandler.GetUserByID)
 			users.PUT("/:id", userHandler.UpdateUser) // Tambahkan ini
 			users.DELETE("/:id", userHandler.DeleteUser)
+		}
+
+		master := api.Group("/master")
+		master.Use(customMiddleware.AuthMiddleware(authService))
+		{
+			// Layanan Terapi
+			layanan := master.Group("/layanan-terapi")
+			{
+				layanan.POST("", masterHandler.CreateLayananTerapi)
+				layanan.GET("", masterHandler.GetAllLayananTerapi)
+				layanan.GET("/:id", masterHandler.GetLayananTerapiByID)
+				layanan.PUT("/:id", masterHandler.UpdateLayananTerapi)
+				layanan.DELETE("/:id", masterHandler.DeleteLayananTerapi)
+			}
+
+			// Riwayat Penyakit
+			riwayat := master.Group("/riwayat-penyakit")
+			{
+				riwayat.POST("", masterHandler.CreateRiwayatPenyakit)
+				riwayat.GET("", masterHandler.GetAllRiwayatPenyakit)
+				riwayat.GET("/:id", masterHandler.GetRiwayatPenyakitByID)
+				riwayat.PUT("/:id", masterHandler.UpdateRiwayatPenyakit)
+				riwayat.DELETE("/:id", masterHandler.DeleteRiwayatPenyakit)
+			}
+
+			// Teknik Terapi
+			teknik := master.Group("/teknik-terapi")
+			{
+				teknik.POST("", masterHandler.CreateTeknikTerapi)
+				teknik.GET("", masterHandler.GetAllTeknikTerapi)
+				teknik.GET("/:id", masterHandler.GetTeknikTerapiByID)
+				teknik.PUT("/:id", masterHandler.UpdateTeknikTerapi)
+				teknik.DELETE("/:id", masterHandler.DeleteTeknikTerapi)
+			}
 		}
 	}
 

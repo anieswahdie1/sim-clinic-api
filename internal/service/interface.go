@@ -15,3 +15,23 @@ type UserService interface {
 	UpdateUser(id uint, request model.UpdateUserRequest, currentUserRole string, currentUserID uint) (*model.User, error)
 	DeleteUser(id uint, currentUserRole string, currentUserID uint) error
 }
+
+type MasterDataService interface {
+	CreateLayananTerapi(request model.LayananTerapiRequest) (*model.LayananTerapi, error)
+	GetAllLayananTerapi() ([]model.LayananTerapi, error)
+	GetLayananTerapiByID(id uint) (*model.LayananTerapi, error)
+	UpdateLayananTerapi(id uint, request model.LayananTerapiRequest) (*model.LayananTerapi, error)
+	DeleteLayananTerapi(id uint) error
+
+	CreateRiwayatPenyakit(request model.RiwayatPenyakitRequest) (*model.RiwayatPenyakit, error)
+	GetAllRiwayatPenyakit() ([]model.RiwayatPenyakit, error)
+	GetRiwayatPenyakitByID(id uint) (*model.RiwayatPenyakit, error)
+	UpdateRiwayatPenyakit(id uint, request model.RiwayatPenyakitRequest) (*model.RiwayatPenyakit, error)
+	DeleteRiwayatPenyakit(id uint) error
+	
+	CreateTeknikTerapi(request model.TeknikTerapiRequest) (*model.TeknikTerapi, error)
+	GetAllTeknikTerapi() ([]model.TeknikTerapi, error)
+	GetTeknikTerapiByID(id uint) (*model.TeknikTerapi, error)
+	UpdateTeknikTerapi(id uint, request model.TeknikTerapiRequest) (*model.TeknikTerapi, error)
+	DeleteTeknikTerapi(id uint) error
+}
