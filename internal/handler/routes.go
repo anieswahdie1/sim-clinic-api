@@ -9,7 +9,13 @@ import (
 	"sim-clinic-api/internal/service"
 )
 
-func SetupRoutes(e *echo.Echo, authService service.AuthService, userService service.UserService, masterService service.MasterDataService) {
+func SetupRoutes(
+	e *echo.Echo,
+	authService service.AuthService,
+	userService service.UserService,
+	masterService service.MasterDataService,
+	customerService service.CustomerService,
+) {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -30,6 +36,7 @@ func SetupRoutes(e *echo.Echo, authService service.AuthService, userService serv
 	authHandler := NewAuthHandler(authService)
 	userHandler := NewUserHandler(userService)
 	masterHandler := NewMasterDataHandler(masterService)
+	customerHandler := NewCustomerHandler(customerService)
 
 	// API Group dengan prefix api
 	api := e.Group("/api")
@@ -84,6 +91,12 @@ func SetupRoutes(e *echo.Echo, authService service.AuthService, userService serv
 				teknik.PUT("/:id", masterHandler.UpdateTeknikTerapi)
 				teknik.DELETE("/:id", masterHandler.DeleteTeknikTerapi)
 			}
+		}
+
+		customer := api.Group("/customer")
+		customer.Use(customMiddleware.AuthMiddleware(authService))
+		{
+			customer.POST("", customerHandler.CreateCustomer)
 		}
 	}
 

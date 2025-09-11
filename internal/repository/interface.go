@@ -50,3 +50,9 @@ type MasterDataRepository interface {
 	UpdateTeknikTerapi(teknik *model.TeknikTerapi) error
 	DeleteTeknikTerapi(id uint) error
 }
+
+type CustomerRepository interface {
+	CreateCustomer(customer *model.Customer) error
+	FindCustomerByID(id string) (*model.Customer, error)
+	FindCustomerByPhoneNumber(phoneNumber string) (*model.Customer, error)
+}

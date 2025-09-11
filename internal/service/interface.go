@@ -28,10 +28,14 @@ type MasterDataService interface {
 	GetRiwayatPenyakitByID(id uint) (*model.RiwayatPenyakit, error)
 	UpdateRiwayatPenyakit(id uint, request model.RiwayatPenyakitRequest) (*model.RiwayatPenyakit, error)
 	DeleteRiwayatPenyakit(id uint) error
-	
+
 	CreateTeknikTerapi(request model.TeknikTerapiRequest) (*model.TeknikTerapi, error)
 	GetAllTeknikTerapi() ([]model.TeknikTerapi, error)
 	GetTeknikTerapiByID(id uint) (*model.TeknikTerapi, error)
 	UpdateTeknikTerapi(id uint, request model.TeknikTerapiRequest) (*model.TeknikTerapi, error)
 	DeleteTeknikTerapi(id uint) error
+}
+
+type CustomerService interface {
+	CreateCustomer(request model.Customer) (*model.Customer, error)
 }

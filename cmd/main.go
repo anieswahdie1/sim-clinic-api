@@ -58,14 +58,22 @@ func main() {
 	roleRepo := repository.NewRoleRepository(db)
 	tokenRepo := repository.NewTokenRepository(db)
 	masterDataRepo := repository.NewMasterDataRepository(db)
+	customerRepo := repository.NewCustomerRepository(db)
 
 	// Initialize services
 	authService := service.NewAuthService(userRepo, roleRepo, tokenRepo, cfg.JWTSecret, cfg.JWTExpire)
 	userService := service.NewUserService(userRepo)
 	masterDataService := service.NewMasterDataService(masterDataRepo)
+	customerService := service.NewCustomerService(customerRepo)
 
 	// Setup routes
-	handler.SetupRoutes(e, authService, userService, masterDataService)
+	handler.SetupRoutes(
+		e,
+		authService,
+		userService,
+		masterDataService,
+		customerService,
+	)
 
 	// Start server
 	logrus.Infof("Server starting on port %s", cfg.AppPort)

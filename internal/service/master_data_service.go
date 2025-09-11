@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"sim-clinic-api/internal/model"
@@ -19,7 +18,7 @@ func NewMasterDataService(masterRepo repository.MasterDataRepository) MasterData
 func (s *masterDataService) CreateLayananTerapi(request model.LayananTerapiRequest) (*model.LayananTerapi, error) {
 	// Check if code already exists
 	existing, _ := s.masterRepo.FindLayananTerapiByCode(request.Code)
-	fmt.Println("panjang existing: ", len(existing))
+
 	if len(existing) != 0 {
 		return nil, &ServiceError{Message: "code already exists", Code: 400}
 	}

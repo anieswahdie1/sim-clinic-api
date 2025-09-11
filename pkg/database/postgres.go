@@ -62,6 +62,7 @@ func AutoMigrate(db *gorm.DB) error {
 		&model.LayananTerapi{},
 		&model.RiwayatPenyakit{},
 		&model.TeknikTerapi{},
+		&model.Customer{},
 	)
 
 	if err != nil {
