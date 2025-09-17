@@ -44,12 +44,21 @@ type UpdateCustomerRequest struct {
 	City            string `json:"city"`
 }
 
+type CheckCustomerByPhoneRequest struct {
+	PhoneNumber string `param:"phoneNumber" valid:"length(10|13)"`
+}
+
 func (r AddCustomerRequest) Validate() error {
 	_, err := govalidator.ValidateStruct(r)
 	return err
 }
 
 func (r UpdateCustomerRequest) Validate() error {
+	_, err := govalidator.ValidateStruct(r)
+	return err
+}
+
+func (r CheckCustomerByPhoneRequest) Validate() error {
 	_, err := govalidator.ValidateStruct(r)
 	return err
 }

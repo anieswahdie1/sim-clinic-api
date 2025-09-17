@@ -98,6 +98,7 @@ func SetupRoutes(
 		customer.Use(customMiddleware.AuthMiddleware(authService))
 		{
 			customer.GET("", customerHandler.GetCustomers)
+			customer.GET("/check/:phoneNumber", customerHandler.CheckExistCustomer)
 			customer.POST("", customerHandler.CreateCustomer)
 		}
 	}

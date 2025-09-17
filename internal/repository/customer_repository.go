@@ -35,16 +35,22 @@ func (r *customerRepository) FindCustomerByID(id string) (*model.Customer, error
 	return &customer[0], nil
 }
 
-func (r *customerRepository) FindCustomerByPhoneNumber(phoneNumber string) (*model.Customer, error) {
-	var customer []model.Customer
+func (r *customerRepository) FindCustomerByPhoneNumber(phoneNumber string) (*[]model.Customer, error) {
+	var (
+		tag      = tagCustomerRepository + "FindCustomerByPhoneNumber."
+		customer []model.Customer
+	)
+
 	err := r.db.Where("phone_number = ?", phoneNumber).Find(&customer).Error
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"tag":   tag + "01",
+			"error": err,
+		})
 		return nil, err
 	}
-	if len(customer) < 1 {
-		return nil, nil
-	}
-	return &customer[0], nil
+
+	return &customer, nil
 }
 
 func (r *customerRepository) UpdateCustomer(customer *model.Customer) error {

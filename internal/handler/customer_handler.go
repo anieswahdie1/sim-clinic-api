@@ -20,6 +20,29 @@ func NewCustomerHandler(customerService service.CustomerService) *CustomerHandle
 	return &CustomerHandler{customerService: customerService}
 }
 
+func (h *CustomerHandler) CheckExistCustomer(ctx echo.Context) error {
+	var (
+		tag     = tagCustomerHandler + "CheckExistCustomer."
+		request model.CheckCustomerByPhoneRequest
+	)
+
+	if err := ctx.Bind(&request); err != nil {
+		logrus.Error(map[string]interface{}{
+			"tag":     tag + "01",
+			"payload": request,
+			"error":   err,
+		})
+		return ctx.JSON(http.StatusBadRequest, errorResponse(err.Error()))
+	}
+
+	custm, err := h.customerService.CheckCustomer(request.PhoneNumber)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, errorResponse(err.Error()))
+	}
+
+	return ctx.JSON(http.StatusOK, successResponse(custm))
+}
+
 func (h *CustomerHandler) CreateCustomer(c echo.Context) error {
 	var request model.AddCustomerRequest
 

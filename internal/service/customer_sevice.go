@@ -18,6 +18,14 @@ func NewCustomerService(customerRepo repository.CustomerRepository) CustomerServ
 	}
 }
 
+func (s *customerService) CheckCustomer(phoneNumber string) (*[]model.Customer, error) {
+	cust, err := s.customerRepo.FindCustomerByPhoneNumber(phoneNumber)
+	if err != nil {
+		return nil, err
+	}
+	return cust, nil
+}
+
 func (s *customerService) CreateCustomer(request model.Customer) (*model.Customer, error) {
 	// check if customer already exists by phone number
 	existing, _ := s.customerRepo.FindCustomerByPhoneNumber(request.PhoneNumber)
@@ -52,14 +60,3 @@ func (s *customerService) GetCustomer(request model.RequestPagination) (*[]model
 
 	return customers, nil
 }
-
-// func (s *customerService) UpdateCustomer(custId string, request *model.Customer) (*model.Customer, error) {
-// 	customer, err := s.customerRepo.FindCustomerByID(custId)
-// 	if err != nil {
-// 		if err == gorm.ErrRecordNotFound {
-// 			return nil, &ServiceError{Message: "customer with this id is not found", Code: 404}
-// 		}
-// 		return nil, err
-// 	}
-
-// }
