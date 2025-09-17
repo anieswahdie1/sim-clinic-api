@@ -32,9 +32,9 @@ func main() {
 	}
 
 	// Auto migrate
-	if err := database.AutoMigrate(db); err != nil {
-		logrus.Fatal("Error migrating database:", err)
-	}
+	// if err := database.AutoMigrate(db); err != nil {
+	// 	logrus.Fatal("Error migrating database:", err)
+	// }
 
 	// Initialize repositories
 	userRepo := repository.NewUserRepository(db)

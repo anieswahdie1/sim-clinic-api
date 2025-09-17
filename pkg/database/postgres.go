@@ -2,14 +2,15 @@ package database
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 	"log"
 	"os"
 	"sim-clinic-api/internal/config"
 	"sim-clinic-api/internal/model"
+
+	"github.com/sirupsen/logrus"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func NewPostgresConnection(cfg *config.Config) (*gorm.DB, error) {
@@ -35,7 +36,7 @@ func NewPostgresConnection(cfg *config.Config) (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	logrus.Info("connected to database")
+	logrus.Info("connected to database succesfully!")
 	return db, nil
 }
 
