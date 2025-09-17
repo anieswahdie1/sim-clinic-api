@@ -55,4 +55,6 @@ type CustomerRepository interface {
 	CreateCustomer(customer *model.Customer) error
 	FindCustomerByID(id string) (*model.Customer, error)
 	FindCustomerByPhoneNumber(phoneNumber string) (*model.Customer, error)
+	UpdateCustomer(customer *model.Customer) error
+	FindCustomers(reqPagination model.RequestPagination) (*[]model.Customer, error)
 }

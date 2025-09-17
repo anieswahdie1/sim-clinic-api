@@ -38,4 +38,6 @@ type MasterDataService interface {
 
 type CustomerService interface {
 	CreateCustomer(request model.Customer) (*model.Customer, error)
+	GetCustomer(requst model.RequestPagination) (*[]model.Customer, error)
+	//UpdateCustomer(request *model.Customer) (*model.Customer, error)
 }

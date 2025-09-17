@@ -1,37 +1,20 @@
 package main
 
 import (
-	"github.com/labstack/echo/v4"
-	"github.com/sirupsen/logrus"
-	"os"
 	"sim-clinic-api/internal/config"
 	"sim-clinic-api/internal/handler"
 	"sim-clinic-api/internal/repository"
 	"sim-clinic-api/internal/service"
 	"sim-clinic-api/pkg/database"
+	"sim-clinic-api/pkg/logger"
+
+	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 )
 
-// @title SIM Clinic API
-// @version 1.0
-// @description API for SIM Clinic Application
-// @termsOfService http://swagger.io/terms/
-
-// @contact.name API Support
-// @contact.email support@simclinic.com
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @host localhost:8080
-// @BasePath /api/v1
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
 func main() {
 	// Setup logger
-	logrus.SetFormatter(&logrus.JSONFormatter{})
-	logrus.SetOutput(os.Stdout)
-	logrus.SetLevel(logrus.InfoLevel)
+	logger.Init()
 
 	// Load configuration
 	cfg, err := config.LoadConfig()

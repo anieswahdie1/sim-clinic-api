@@ -1,12 +1,13 @@
 package handler
 
 import (
+	customMiddleware "sim-clinic-api/internal/middleware"
+	"sim-clinic-api/internal/service"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	customMiddleware "sim-clinic-api/internal/middleware"
-	"sim-clinic-api/internal/service"
 )
 
 func SetupRoutes(
@@ -96,6 +97,7 @@ func SetupRoutes(
 		customer := api.Group("/customer")
 		customer.Use(customMiddleware.AuthMiddleware(authService))
 		{
+			customer.GET("", customerHandler.GetCustomers)
 			customer.POST("", customerHandler.CreateCustomer)
 		}
 	}

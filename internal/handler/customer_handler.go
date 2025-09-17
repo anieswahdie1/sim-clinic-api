@@ -1,12 +1,16 @@
 package handler
 
 import (
-	"github.com/google/uuid"
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"sim-clinic-api/internal/model"
 	"sim-clinic-api/internal/service"
+
+	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 )
+
+var tagCustomerHandler = "internal.handler.customer_handler."
 
 type CustomerHandler struct {
 	customerService service.CustomerService
@@ -43,4 +47,30 @@ func (h *CustomerHandler) CreateCustomer(c echo.Context) error {
 		return handleServiceError(c, err)
 	}
 	return c.JSON(http.StatusCreated, successResponse(customer))
+}
+
+func (h *CustomerHandler) GetCustomers(ctx echo.Context) error {
+	var (
+		tag     = tagCustomerHandler + "GetCustomers."
+		request model.RequestPagination
+	)
+
+	if err := ctx.Bind(&request); err != nil {
+		logrus.Error(map[string]interface{}{
+			"tag":     tag + "01",
+			"payload": request,
+			"error":   err,
+		})
+
+		return ctx.JSON(http.StatusBadRequest, errorResponse(err.Error()))
+	}
+
+	cust, err := h.customerService.GetCustomer(request)
+
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, errorResponse(err.Error()))
+	}
+
+	return ctx.JSON(http.StatusOK, successResponse(cust))
+
 }
