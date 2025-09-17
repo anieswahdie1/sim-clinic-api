@@ -1,11 +1,15 @@
 package config
 
 import (
+	"sim-clinic-api/internal/utils"
+	"time"
+
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
-	"os"
-	"time"
 )
+
+var getEnv = utils.GetEnv
+var parseDuration = utils.ParseDuration
 
 type Config struct {
 	AppPort   string
@@ -41,19 +45,4 @@ func LoadConfig() (*Config, error) {
 		DBSSLMode:  getEnv("DB_SSLMODE", "disable"),
 		DBLogLevel: getEnv("DB_LOG_LEVEL", "info"),
 	}, nil
-}
-
-func getEnv(key, defaultValue string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	return defaultValue
-}
-
-func parseDuration(durationStr string) time.Duration {
-	duration, err := time.ParseDuration(durationStr)
-	if err != nil {
-		return 24 * time.Hour
-	}
-	return duration
 }
