@@ -1,13 +1,14 @@
 package service
 
 import (
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/sirupsen/logrus"
-	"gorm.io/gorm"
 	"sim-clinic-api/internal/model"
 	"sim-clinic-api/internal/repository"
 	"sim-clinic-api/internal/utils"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
 type authService struct {
@@ -67,6 +68,8 @@ func (s *authService) Register(request model.RegisterRequest) (*model.User, erro
 		Email:    request.Email,
 		Password: hashedPassword,
 		RoleID:   request.RoleID,
+		Fullname: request.Fullname,
+		Jabatan:  request.Jabatan,
 	}
 
 	if err := s.userRepo.Create(user); err != nil {

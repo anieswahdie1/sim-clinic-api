@@ -1,12 +1,13 @@
 package handler
 
 import (
-	"github.com/labstack/echo/v4"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"sim-clinic-api/internal/model"
 	"sim-clinic-api/internal/service"
 	"strings"
+
+	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 )
 
 type AuthHandler struct {
@@ -54,6 +55,8 @@ func (h *AuthHandler) Register(c echo.Context) error {
 			"username": user.Username,
 			"email":    user.Email,
 			"role":     user.Role.Name,
+			"fullname": user.Fullname,
+			"jabatan":  user.Jabatan,
 		},
 	}))
 }

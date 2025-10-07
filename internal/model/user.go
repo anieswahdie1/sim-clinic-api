@@ -17,6 +17,8 @@ type User struct {
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `json:"deleted_at" gorm:"index"`
+	Fullname  string         `json:"fullname"`
+	Jabatan   string         `json:"jabatan"`
 }
 
 func (u *User) Validate() error {
@@ -29,6 +31,8 @@ type RegisterRequest struct {
 	Email    string `json:"email" valid:"required,email"`
 	Password string `json:"password" valid:"required,length(6|100)"`
 	RoleID   uint   `json:"role_id" valid:"required"`
+	Fullname string `json:"fullname"`
+	Jabatan  string `json:"jabatan"`
 }
 
 func (r *RegisterRequest) Validate() error {
