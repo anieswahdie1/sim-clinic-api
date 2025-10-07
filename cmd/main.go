@@ -6,7 +6,7 @@ import (
 	"sim-clinic-api/internal/repository"
 	"sim-clinic-api/internal/service"
 	"sim-clinic-api/pkg/database"
-	"sim-clinic-api/pkg/logger"
+	logger "sim-clinic-api/pkg/log"
 
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
