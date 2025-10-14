@@ -49,6 +49,8 @@ func (h *UserHandler) GetAllUsers(c echo.Context) error {
 			"email":      user.Email,
 			"role":       user.Role.Name,
 			"created_at": user.CreatedAt,
+			"fullname":   user.Fullname,
+			"jabatan":    user.Jabatan,
 		}
 	}
 

@@ -17,8 +17,8 @@ type User struct {
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `json:"deleted_at" gorm:"index"`
-	Fullname  string         `json:"fullname"`
-	Jabatan   string         `json:"jabatan"`
+	Fullname  string         `json:"fullname" gorm:"nullable"`
+	Jabatan   string         `json:"jabatan" gorm:"nullable"`
 }
 
 func (u *User) Validate() error {
