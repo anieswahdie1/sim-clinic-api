@@ -3,9 +3,9 @@ package model
 import "github.com/asaskevich/govalidator"
 
 type RequestPagination struct {
-	Page   string `param:"page" json:"page" valid:"required,alphanum"`
-	Limit  string `param:"limit" json:"limit" valid:"required,alphanum"`
-	Search string `param:"search" json:"search"`
+	Page   string `query:"page" valid:"required,alphanum"`
+	Limit  string `query:"limit" valid:"required,alphanum"`
+	Search string `query:"search" `
 }
 
 func (r *RequestPagination) Validate() error {

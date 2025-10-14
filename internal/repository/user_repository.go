@@ -1,9 +1,13 @@
 package repository
 
 import (
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"sim-clinic-api/internal/model"
+	"strconv"
 )
+
+var tagRepoUser = "internal.repository.user_repository."
 
 type userRepository struct {
 	db *gorm.DB
@@ -44,13 +48,47 @@ func (r *userRepository) FindByID(id uint) (*model.User, error) {
 	return &user, nil
 }
 
-func (r *userRepository) FindAll() ([]model.User, error) {
-	var users []model.User
-	err := r.db.Preload("Role").Find(&users).Error
-	if err != nil {
-		return nil, err
+func (r *userRepository) FindAll(page, limit, search string) ([]model.User, int64, error) {
+	var (
+		users               []model.User
+		currPage, currLimit int
+		total               int64
+		tag                 = tagRepoUser + "FindAll."
+	)
+
+	query := r.db.Model(&model.User{}).Preload("Role")
+	if page == "" {
+		currPage = 1
+	} else {
+		currPage, _ = strconv.Atoi(page)
 	}
-	return users, nil
+
+	if limit == "" {
+		currLimit = 5
+	} else {
+		currLimit, _ = strconv.Atoi(limit)
+	}
+
+	offset := (currPage - 1) * currLimit
+
+	if search != "" {
+		searchPattern := "%" + search + "%"
+		query = query.Where("username LIKE ?", searchPattern)
+	}
+
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	err := query.Limit(currLimit).Offset(offset).Find(&users).Error
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"tag":   tag + "01",
+			"error": err,
+		})
+		return nil, 0, err
+	}
+	return users, total, nil
 }
 
 func (r *userRepository) FindByRole(roleName string) ([]model.User, error) {

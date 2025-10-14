@@ -15,33 +15,33 @@ func NewUserService(userRepo repository.UserRepository) UserService {
 	return &userService{userRepo: userRepo}
 }
 
-func (s *userService) GetAllUsers(currentUserRole string) ([]model.User, error) {
+func (s *userService) GetAllUsers(currentUserRole string, page, limit, search string) ([]model.User, int64, error) {
 	switch currentUserRole {
 	case "super_admin":
 		// Super admin bisa melihat semua user
-		users, err := s.userRepo.FindAll()
+		users, total, err := s.userRepo.FindAll(page, limit, search)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
-		return users, nil
+		return users, total, nil
 
 	case "admin":
 		// Admin bisa melihat admin dan user (tidak bisa melihat super_admin)
 		users, err := s.userRepo.FindByRoles([]string{"admin", "user"})
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
-		return users, nil
+		return users, 0, nil
 
 	case "user":
 		// User tidak boleh melihat user lain
-		return nil, &ServiceError{
+		return nil, 0, &ServiceError{
 			Message: "access denied: insufficient permissions",
 			Code:    403,
 		}
 
 	default:
-		return nil, &ServiceError{
+		return nil, 0, &ServiceError{
 			Message: "invalid user role",
 			Code:    400,
 		}

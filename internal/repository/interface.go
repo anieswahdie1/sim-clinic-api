@@ -7,7 +7,7 @@ type UserRepository interface {
 	FindByUsername(username string) (*model.User, error)
 	FindByEmail(email string) (*model.User, error)
 	FindByID(id uint) (*model.User, error)
-	FindAll() ([]model.User, error)
+	FindAll(page, limit, search string) ([]model.User, int64, error)
 	FindByRole(roleName string) ([]model.User, error)
 	FindByRoles(roleNames []string) ([]model.User, error)
 	Update(user *model.User) error

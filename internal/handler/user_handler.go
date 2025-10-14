@@ -29,13 +29,21 @@ func NewUserHandler(userService service.UserService) *UserHandler {
 // @Failure 500 {object} map[string]interface{} "Internal server error"
 // @Router /api/users [get]
 func (h *UserHandler) GetAllUsers(c echo.Context) error {
+	var (
+		request model.RequestPagination
+	)
+
+	if err := c.Bind(&request); err != nil {
+		return c.JSON(http.StatusBadRequest, errorResponse("Invalid request body"))
+	}
+
 	// Get user role from context (set by auth middleware)
 	userRole, ok := c.Get("userRole").(string)
 	if !ok {
 		return c.JSON(http.StatusUnauthorized, errorResponse("Invalid user context"))
 	}
 
-	users, err := h.userService.GetAllUsers(userRole)
+	users, total, err := h.userService.GetAllUsers(userRole, request.Page, request.Limit, request.Search)
 	if err != nil {
 		return handleServiceError(c, err)
 	}
@@ -54,8 +62,18 @@ func (h *UserHandler) GetAllUsers(c echo.Context) error {
 		}
 	}
 
+	currPage, _ := strconv.Atoi(request.Page)
+	currLimit, _ := strconv.Atoi(request.Limit)
+
+	finalResp := model.ResponsePagination{
+		Data:  filteredUsers,
+		Total: total,
+		Page:  currPage,
+		Limit: currLimit,
+	}
+
 	logrus.Infof("User with role %s retrieved %d users", userRole, len(users))
-	return c.JSON(http.StatusOK, successResponse(filteredUsers))
+	return c.JSON(http.StatusOK, successResponse(finalResp))
 }
 
 // GetUserByID godoc
