@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog/log"
 	"github.com/sirupsen/logrus"
 )
 
@@ -77,7 +78,7 @@ func (h *AuthHandler) Login(c echo.Context) error {
 	var request model.LoginRequest
 
 	if err := c.Bind(&request); err != nil {
-		logrus.Warnf("Invalid login request: %v", err)
+		log.Warn().Msgf("Invalid login request: %v", err)
 		return c.JSON(http.StatusBadRequest, errorResponse("Invalid request body"))
 	}
 
