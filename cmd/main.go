@@ -9,7 +9,7 @@ import (
 	logger "sim-clinic-api/pkg/log"
 
 	"github.com/labstack/echo/v4"
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func main() {
@@ -19,7 +19,7 @@ func main() {
 	// Load configuration
 	cfg, err := config.LoadConfig()
 	if err != nil {
-		logrus.Fatal("Error loading config:", err)
+		log.Fatal().Err(err).Msgf("Error loading config: %s", err)
 	}
 
 	// Initialize Echo
@@ -28,13 +28,13 @@ func main() {
 	// Initialize database
 	db, err := database.NewPostgresConnection(cfg)
 	if err != nil {
-		logrus.Fatal("Error connecting to database:", err)
+		log.Fatal().Err(err).Msgf("Error connecting to database: %s", err)
 	}
 
 	// Auto migrate
-	// if err := database.AutoMigrate(db); err != nil {
-	// 	logrus.Fatal("Error migrating database:", err)
-	// }
+	if err := database.AutoMigrate(db); err != nil {
+		log.Fatal().Err(err).Msgf("Error migrating database: %s", err)
+	}
 
 	// Initialize repositories
 	userRepo := repository.NewUserRepository(db)
@@ -59,8 +59,8 @@ func main() {
 	)
 
 	// Start server
-	logrus.Infof("Server starting on port %s", cfg.AppPort)
+	log.Info().Msgf("Server starting on port %s", cfg.AppPort)
 	if err := e.Start(":" + cfg.AppPort); err != nil {
-		logrus.Fatal("Error starting server:", err)
+		log.Fatal().Err(err).Msgf("Error starting server: %s", err)
 	}
 }
